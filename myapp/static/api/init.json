@@ -1,0 +1,55 @@
+{
+  "homeInfo": {
+    "title": "首页",
+    "href": "page/page/welcome-1.html?t=1"
+  },
+  "logoInfo": {
+    "title": "LAYUI MINI",
+    "image": "/static/images/logo.png",
+    "href": ""
+  },
+  "menuInfo": [
+    {
+      "title": "图表管理",
+      "icon": "fa fa-address-book",
+      "href": "",
+      "target": "_self",
+      "child": [
+        {
+          "title": "图表列表",
+          "href": "",
+          "icon": "fa fa-home",
+          "target": "_self",
+          "child": [
+            {
+              "title": "地图",
+              "href": "page/page/welcome-1.html",
+              "icon": "fa fa-tachometer",
+              "target": "_self"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "文件管理",
+      "icon": "fa fa-lemon-o",
+      "href": "",
+      "target": "_self",
+      "child": [
+        {
+          "title": "文件上传",
+          "href": "page/page/upload.html",
+          "icon": "fa fa-arrow-up",
+          "target": "_self"
+        },
+        {
+          "title": "文件列表",
+          "href": "page/page/table.html",
+          "icon": "fa fa-file-text",
+          "target": "_self"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,354 @@
+<!DOCTYPE html>{% load static %}
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>首页二</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="{% static 'lib/layui-v2.5.5/css/layui.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'lib/font-awesome-4.7.0/css/font-awesome.min.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'css/public.css' %}" media="all">
+    <style>
+        .layui-card {border:1px solid #f2f2f2;border-radius:5px;}
+        .icon {margin-right:10px;color:#1aa094;}
+        .icon-cray {color:#ffb800!important;}
+        .icon-blue {color:#1e9fff!important;}
+        .icon-tip {color:#ff5722!important;}
+        .layuimini-qiuck-module {text-align:center;margin-top: 10px}
+        .layuimini-qiuck-module a i {display:inline-block;width:100%;height:60px;line-height:60px;text-align:center;border-radius:2px;font-size:30px;background-color:#F8F8F8;color:#333;transition:all .3s;-webkit-transition:all .3s;}
+        .layuimini-qiuck-module a cite {position:relative;top:2px;display:block;color:#666;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;font-size:14px;}
+        .welcome-module {width:100%;height:210px;}
+        .panel {background-color:#fff;border:1px solid transparent;border-radius:3px;-webkit-box-shadow:0 1px 1px rgba(0,0,0,.05);box-shadow:0 1px 1px rgba(0,0,0,.05)}
+        .panel-body {padding:10px}
+        .panel-title {margin-top:0;margin-bottom:0;font-size:12px;color:inherit}
+        .label {display:inline;padding:.2em .6em .3em;font-size:75%;font-weight:700;line-height:1;color:#fff;text-align:center;white-space:nowrap;vertical-align:baseline;border-radius:.25em;margin-top: .3em;}
+        .layui-red {color:red}
+        .main_btn > p {height:40px;}
+        .layui-bg-number {background-color:#F8F8F8;}
+        .layuimini-notice:hover {background:#f6f6f6;}
+        .layuimini-notice {padding:7px 16px;clear:both;font-size:12px !important;cursor:pointer;position:relative;transition:background 0.2s ease-in-out;}
+        .layuimini-notice-title,.layuimini-notice-label {
+            padding-right: 70px !important;text-overflow:ellipsis!important;overflow:hidden!important;white-space:nowrap!important;}
+        .layuimini-notice-title {line-height:28px;font-size:14px;}
+        .layuimini-notice-extra {position:absolute;top:50%;margin-top:-8px;right:16px;display:inline-block;height:16px;color:#999;}
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <form class="layui-form" action="">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">文件</label>
+                            <div class="layui-input-block">
+                                <select name="file_select" id="file_select" lay-filter="file_select">
+                                    
+                                </select>
+                            </div>
+                        </div>
+                      </form>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header"><i class="fa fa-line-chart icon"></i>报表统计</div>
+                    <div class="layui-card-body" id="echart_card">
+                        <div id="echarts-records" style="width: 1000px;height:500px"></div>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--引入百度地图的jssdk，这里需要使用你在百度地图开发者平台申请的 ak-->
+<script src="http://api.map.baidu.com/api?v=2.0&ak=t6FhPX8kta44hnWYUb9wN3sam3p2G6AG"></script>
+<script src="{% static 'js/echarts.js'%}"></script>
+<!-- 引入百度地图扩展 -->
+<script src="{% static 'js/bmap.js'%}"></script>
+<script src="{% static 'lib/layui-v2.5.5/layui.js'%}" charset="utf-8"></script>
+<script src="{% static 'js/lay-config.js'%}?v=1.0.4" charset="utf-8"></script>
+<script>
+    layui.use(['layer', 'miniTab','form'], function () {
+        var $ = layui.jquery,
+            layer = layui.layer,
+            form = layui.form,
+            miniTab = layui.miniTab;
+            //echarts = layui.echarts;
+
+        miniTab.listen();
+        //获取下拉文件数据
+        $.getJSON("/myapp/api/file/select/c", function(json) {
+            var data = json.data;
+            $("#file_select").empty();
+            $("#file_select").append($("<option>---请选择文件---</option>"));
+            $.each(data, function( key,val ) {
+                var tplInput=$("<option  value="+val.id+" data-fileUrl="+ val.file +">"+val.title+"</option>");
+                $("#file_select").append(tplInput);
+            });
+            form.render()
+        });
+
+        form.on('select(file_select)', function(data){
+            var file_id = $(data.elem).find("option:selected").val();
+            var file_url = $(data.elem).find("option:selected").data('fileUrl')
+            $.getJSON("/myapp/api/chart1?file_id="+file_id, function(json) {
+                option.title.subtext = file_url
+                geoCoordMap = json.data.geoCoordMap
+                data = json.data.data;
+                option.series[0].data=convertData(data);
+                echartsRecords.setOption(option);
+            });
+        });
+        /**
+         * 报表功能
+         */
+        var echartsRecords = echarts.init(document.getElementById('echarts-records'), 'walden');
+        
+        var data = [];
+
+        var geoCoordMap = {};
+
+        var convertData = function (data) {
+            var res = [];
+            for (var i = 0; i < data.length; i++) {
+                var geoCoord = geoCoordMap[data[i].name];
+                if (geoCoord) {
+                    res.push({
+                        name: data[i].name,
+                        value: geoCoord.concat(data[i].value)
+                    });
+                }
+            }
+            return res;
+        };
+
+        function renderItem(params, api) {
+        var coords = [
+            [116.7,39.53],
+            [103.73,36.03],
+            [112.91,27.87],
+            [120.65,28.01],
+            [119.57,39.95]
+        ];
+        var points = [];
+        for (var i = 0; i < coords.length; i++) {
+            points.push(api.coord(coords[i]));
+        }
+        var color = api.visual('color');
+
+        return {
+            type: 'polygon',
+            shape: {
+                points: echarts.graphic.clipPointsByRect(points, {
+                    x: params.coordSys.x,
+                    y: params.coordSys.y,
+                    width: params.coordSys.width,
+                    height: params.coordSys.height
+                })
+            },
+            style: api.style({
+                fill: color,
+                stroke: echarts.color.lift(color)
+            })
+        };
+    }
+
+        option = {
+            backgroundColor: 'transparent',
+            title: {
+                text: '数据统计',
+                left: 'center',
+                textStyle: {
+                    color: '#fff'
+                }
+            },
+            tooltip : {
+                trigger: 'item'
+            },
+            bmap: {
+                center: [104.114129, 37.550339],
+                zoom: 2,
+                roam: true,
+                mapStyle: {
+                    styleJson: [
+                            {
+                                "featureType": "water",
+                                "elementType": "all",
+                                "stylers": {
+                                    "color": "#044161"
+                                }
+                            },
+                            {
+                                "featureType": "land",
+                                "elementType": "all",
+                                "stylers": {
+                                    "color": "#004981"
+                                }
+                            },
+                            {
+                                "featureType": "boundary",
+                                "elementType": "geometry",
+                                "stylers": {
+                                    "color": "#064f85"
+                                }
+                            },
+                            {
+                                "featureType": "railway",
+                                "elementType": "all",
+                                "stylers": {
+                                    "visibility": "off"
+                                }
+                            },
+                            {
+                                "featureType": "highway",
+                                "elementType": "geometry",
+                                "stylers": {
+                                    "color": "#004981"
+                                }
+                            },
+                            {
+                                "featureType": "highway",
+                                "elementType": "geometry.fill",
+                                "stylers": {
+                                    "color": "#005b96",
+                                    "lightness": 1
+                                }
+                            },
+                            {
+                                "featureType": "highway",
+                                "elementType": "labels",
+                                "stylers": {
+                                    "visibility": "off"
+                                }
+                            },
+                            {
+                                "featureType": "arterial",
+                                "elementType": "geometry",
+                                "stylers": {
+                                    "color": "#004981"
+                                }
+                            },
+                            {
+                                "featureType": "arterial",
+                                "elementType": "geometry.fill",
+                                "stylers": {
+                                    "color": "#00508b"
+                                }
+                            },
+                            {
+                                "featureType": "poi",
+                                "elementType": "all",
+                                "stylers": {
+                                    "visibility": "off"
+                                }
+                            },
+                            {
+                                "featureType": "green",
+                                "elementType": "all",
+                                "stylers": {
+                                    "color": "#056197",
+                                    "visibility": "off"
+                                }
+                            },
+                            {
+                                "featureType": "subway",
+                                "elementType": "all",
+                                "stylers": {
+                                    "visibility": "off"
+                                }
+                            },
+                            {
+                                "featureType": "manmade",
+                                "elementType": "all",
+                                "stylers": {
+                                    "visibility": "off"
+                                }
+                            },
+                            {
+                                "featureType": "local",
+                                "elementType": "all",
+                                "stylers": {
+                                    "visibility": "off"
+                                }
+                            },
+                            {
+                                "featureType": "arterial",
+                                "elementType": "labels",
+                                "stylers": {
+                                    "visibility": "off"
+                                }
+                            },
+                            {
+                                "featureType": "boundary",
+                                "elementType": "geometry.fill",
+                                "stylers": {
+                                    "color": "#029fd4"
+                                }
+                            },
+                            {
+                                "featureType": "building",
+                                "elementType": "all",
+                                "stylers": {
+                                    "color": "#1a5787"
+                                }
+                            },
+                            {
+                                "featureType": "label",
+                                "elementType": "all",
+                                "stylers": {
+                                    "visibility": "off"
+                                }
+                            }
+                    ]
+                }
+            },
+            series : [
+                {
+                    name: 'Net capacity',
+                    type: 'scatter',
+                    coordinateSystem: 'bmap',
+                    data: convertData(data),
+                    encode: {
+                        value: 2
+                    },
+                    symbolSize: function (val) {
+                        return val[2] / 500;
+                    },
+                    label: {
+                        formatter: '{b}',
+                        position: 'right'
+                    },
+                    itemStyle: {
+                        color: '#ddb926'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true
+                        }
+                    }
+                }
+            ]
+        };
+        echartsRecords.setOption(option);
+        // echarts 窗口缩放自适应
+        //用于使chart自适应高度和宽度,通过窗体高宽计算容器高宽
+        var resizeEchartContainer = function () {
+            width = $("#echart_card").width();
+            height = $("#echart_card").height();
+            document.getElementById('echarts-records').style.width = width+'px';
+            document.getElementById('echarts-records').style.height = height+'px';
+        };
+        window.onresize = function(){
+            resizeEchartContainer(); 
+            echartsRecords.resize();
+        }
+        resizeEchartContainer();
+    });
+</script>
+</body>
+</html>
