@@ -16,12 +16,12 @@
 
 1. 克隆本项目
 
-   `https://github.com/haominglfs/chart.git`
+   `git clone https://github.com/haominglfs/chart.git`
 
 2. 创建虚拟环境
 
    ```shell
-   python -m venv myvenv 创建虚拟环境
+   python3 -m venv myvenv 创建虚拟环境
    source myvenv/bin/activate 激活环境
    ```
 
@@ -39,3 +39,7 @@
 5. 运行程序
 
    `python manage.py runserver 0:8888`
+
+6. 浏览器输入
+
+   `http://localhost:8888/myapp`
