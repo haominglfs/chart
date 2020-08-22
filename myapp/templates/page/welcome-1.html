@@ -93,13 +93,13 @@
             form.render()
         });
 
-        form.on('select(file_select)', function(data){
-            var file_id = $(data.elem).find("option:selected").val();
-            var file_url = $(data.elem).find("option:selected").data('fileUrl')
+        form.on('select(file_select)', function(da){
+            var file_id = $(da.elem).find("option:selected").val();
+            var file_url = $(da.elem).find("option:selected").data('fileUrl')
             $.getJSON("/myapp/api/chart1?file_id="+file_id, function(json) {
-                option.title.subtext = file_url
-                geoCoordMap = json.data.geoCoordMap
                 data = json.data.data;
+                geoCoordMap = json.data.geoCoordMap
+                option.title.subtext = file_url
                 option.series[0].data=convertData(data);
                 echartsRecords.setOption(option);
             });
@@ -108,11 +108,8 @@
          * 报表功能
          */
         var echartsRecords = echarts.init(document.getElementById('echarts-records'), 'walden');
-        
         var data = [];
-
         var geoCoordMap = {};
-
         var convertData = function (data) {
             var res = [];
             for (var i = 0; i < data.length; i++) {
@@ -120,7 +117,7 @@
                 if (geoCoord) {
                     res.push({
                         name: data[i].name,
-                        value: geoCoord.concat(data[i].value)
+                        value: geoCoord.concat(data[i].value[0].value)
                     });
                 }
             }
@@ -168,7 +165,19 @@
                 }
             },
             tooltip : {
-                trigger: 'item'
+                trigger: 'item',
+                formatter: function(params){
+                    var toolTiphtml = ''
+                    for(var i = 0;i<data.length;i++){
+                        if(params.name==data[i].name){
+                            toolTiphtml += data[i].name+':<br>'
+                            for(var j = 0;j<data[i].value.length;j++){
+                                toolTiphtml+=data[i].value[j].name+':'+data[i].value[j].value+"<br>"
+                            }
+                        }
+                    }
+                    return toolTiphtml;
+                }
             },
             bmap: {
                 center: [104.114129, 37.550339],
@@ -310,7 +319,8 @@
             series : [
                 {
                     name: 'Net capacity',
-                    type: 'scatter',
+                    //type: 'scatter',
+                    type: 'effectScatter',
                     coordinateSystem: 'bmap',
                     data: convertData(data),
                     encode: {

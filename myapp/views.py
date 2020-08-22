@@ -90,7 +90,13 @@ def chart1(request):
                 continue
             data_obj = {}
             data_obj['name'] = row["Id"]
-            data_obj['value'] = row["Net capacity (MW)"]
+            sxarr = [
+                {'name':'Net capacity (MW)','value':row["Net capacity (MW)"]},
+                {'name':'Commissioning Year','value':str(row["Commissioning Year"])},
+                {'name':'Energy','value':row["Energy "]},
+                {'name':'Status','value':row["Status"]}
+                ]
+            data_obj['value'] = sxarr
             ll = []
             ll.append(row["Longitude"])
             ll.append(row["Latitude"])

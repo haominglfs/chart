@@ -1,2 +1,11 @@
 .vscode/
 myvenv/
+db.sqlite3
+
+__pycache__/
+*.py[cod]
+
+# django migrations 
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
