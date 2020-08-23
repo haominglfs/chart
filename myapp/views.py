@@ -36,7 +36,7 @@ def upload(request):
             name = fs.save(upload_file.name,upload_file)
             url = fs.url(name)
             Files.objects.create(title=upload_file.name,size=upload_file.size,file=url)
-            return success('上传成功',data=[url])
+            return success(data=url)
         except Exception as e:
             return error(message=str(e))
     else:
