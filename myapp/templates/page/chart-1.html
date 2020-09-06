@@ -40,15 +40,58 @@
         <div class="layui-row layui-col-space15">
             <div class="layui-col-md12">
                 <div class="layui-card">
-                    <form class="layui-form" action="">
+                    <form class="layui-form" action="" id="chart1_form">
                         <div class="layui-form-item">
                             <label class="layui-form-label">文件</label>
                             <div class="layui-input-block">
                                 <select name="file_select" id="file_select" lay-filter="file_select">
-                                    
                                 </select>
                             </div>
                         </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">区域</label>
+                                <div class="layui-input-inline">
+                                    <select name="zone_select" id="zone_select" lay-filter="zone_select">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">国家</label></label>
+                                <div class="layui-input-inline">
+                                    <select name="country_select" id="country_select" lay-filter="country_select">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">状态</label></label>
+                                <div class="layui-input-inline">
+                                    <select name="status_select" id="status_select" lay-filter="status_select">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">年度</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="start_date" id="start_date" lay-verify="start_date" placeholder="yyyy" autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-form-mid">-</div>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="end_date" id="end_date" lay-verify="end_date" placeholder="yyyy" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item" pane="">
+                            <label class="layui-form-label">类别</label>
+                            <div class="layui-input-block" id="energy">
+                                <input type="checkbox" name="like1[write]" lay-skin="primary" title="写作" checked="">
+                                <input type="checkbox" name="like1[read]" lay-skin="primary" title="阅读">
+                                <input type="checkbox" name="like1[game]" lay-skin="primary" title="游戏" disabled="">
+                            </div>
+                        </div>
+                        
                       </form>
                 </div>
             </div>
@@ -56,9 +99,9 @@
         <div class="layui-row layui-col-space15">
             <div class="layui-col-md12">
                 <div class="layui-card">
-                    <div class="layui-card-header"><i class="fa fa-line-chart icon"></i>报表统计</div>
+                    <!-- <div class="layui-card-header"><i class="fa fa-line-chart icon"></i>报表统计</div> -->
                     <div class="layui-card-body" id="echart_card">
-                        <div id="echarts-records" style="width: 1000px;height:500px"></div>
+                        <div id="echarts-records" style="width: 2000px;height:1000px"></div>
                     </div>
                   </div>
             </div>
@@ -73,14 +116,26 @@
 <script src="{% static 'lib/layui-v2.5.5/layui.js'%}" charset="utf-8"></script>
 <script src="{% static 'js/lay-config.js'%}?v=1.0.4" charset="utf-8"></script>
 <script>
-    layui.use(['layer', 'miniTab','form'], function () {
+    layui.use(['layer', 'miniTab','form','laydate'], function () {
         var $ = layui.jquery,
             layer = layui.layer,
             form = layui.form,
+            laydate = layui.laydate,
             miniTab = layui.miniTab;
             //echarts = layui.echarts;
 
         miniTab.listen();
+
+        //日期
+        laydate.render({
+            elem: '#start_date',
+            type: 'year'
+        });
+        laydate.render({
+            elem: '#end_date',
+            type: 'year'
+        });
+
         //获取下拉文件数据
         $.getJSON("/myapp/api/file/select/c", function(json) {
             var data = json.data;
@@ -93,10 +148,33 @@
             form.render()
         });
 
+        function genSelect($dom,data,tip){
+            $dom.empty();
+            $dom.append($("<option>---"+tip+"---</option>"));
+            $.each(data, function( key,val ) {
+                var tplInput=$("<option  value="+val+">"+val+"</option>");
+                $dom.append(tplInput);
+            });
+            form.render()
+        }
+
+        function genCheckBox($dom,data){
+            $dom.empty();
+            $.each(data, function( key,val ) {
+                var tplInput=$("<input type='checkbox' name='like1["+val+"]' lay-skin='primary' title="+val+" checked='' />");
+                $dom.append(tplInput);
+            });
+            form.render()
+        }
+
         form.on('select(file_select)', function(da){
             var file_id = $(da.elem).find("option:selected").val();
             var file_url = $(da.elem).find("option:selected").data('fileUrl')
             $.getJSON("/myapp/api/chart1?file_id="+file_id, function(json) {
+                genSelect($("#zone_select"),json.data.zones,'请选择区域')
+                genSelect($("#country_select"),json.data.countries,'请选择国家')
+                genSelect($("#status_select"),json.data.status,'请选择状态')
+                genCheckBox($("#energy"),json.data.energys)
                 data = json.data.data;
                 geoCoordMap = json.data.geoCoordMap
                 option.title.subtext = file_url
@@ -104,6 +182,21 @@
                 echartsRecords.setOption(option);
             });
         });
+
+        function submitForm(url,success,error){
+            $.ajax({
+                type: "POST",
+                data: $("#chart1_form").serialize(),
+                url: url,
+                dataType:'json',
+                success: success(data),
+                error: error(data)
+            });
+        }
+
+        form.on('select(zone_select)',function(da){
+            var url = '/myapp/api/chart1';
+        })
         /**
          * 报表功能
          */
@@ -187,136 +280,62 @@
             bmap: {
                 center: [104.114129, 37.550339],
                 //mapType: 'china',
-                zoom: 5,// 百度地图缩放等级，数字越大，放大越大，地图比例尺越小
-                roam: 'move', // 是否开启拖拽缩放，可以只设置 'scale' 或者 'move' true
+                zoom: 1,// 百度地图缩放等级，数字越大，放大越大，地图比例尺越小
+                roam: true, // 是否开启拖拽缩放，可以只设置 'scale' 或者 'move' true
                 mapStyle: {
                     styleJson: [
                         {
-                            "featureType": "water",
+                            "featureType": "road",
                             "elementType": "all",
                             "stylers": {
-                                "color": "#044161"
+                                "lightness": 20
                             }
-                        },
-                        {
-                            "featureType": "land",
-                            "elementType": "all",
-                            "stylers": {
-                                "color": "#004981"
-                            }
-                        },
-                        {
-                            "featureType": "boundary",
+                        }, {
+                            "featureType": "highway",
                             "elementType": "geometry",
                             "stylers": {
-                                "color": "#064f85"
+                                "color": "#f49935"
                             }
-                        },
-                        {
+                        }, {
                             "featureType": "railway",
                             "elementType": "all",
                             "stylers": {
                                 "visibility": "off"
                             }
-                        },
-                        {
-                            "featureType": "highway",
-                            "elementType": "geometry",
-                            "stylers": {
-                                "color": "#004981"
-                            }
-                        },
-                        {
-                            "featureType": "highway",
-                            "elementType": "geometry.fill",
-                            "stylers": {
-                                "color": "#005b96",
-                                "lightness": 1
-                            }
-                        },
-                        {
-                            "featureType": "highway",
-                            "elementType": "labels",
-                            "stylers": {
-                                "visibility": "off"
-                            }
-                        },
-                        {
-                            "featureType": "arterial",
-                            "elementType": "geometry",
-                            "stylers": {
-                                "color": "#004981"
-                            }
-                        },
-                        {
-                            "featureType": "arterial",
-                            "elementType": "geometry.fill",
-                            "stylers": {
-                                "color": "#00508b"
-                            }
-                        },
-                        {
-                            "featureType": "poi",
-                            "elementType": "all",
-                            "stylers": {
-                                "visibility": "off"
-                            }
-                        },
-                        {
-                            "featureType": "green",
-                            "elementType": "all",
-                            "stylers": {
-                                "color": "#056197",
-                                "visibility": "off"
-                            }
-                        },
-                        {
-                            "featureType": "subway",
-                            "elementType": "all",
-                            "stylers": {
-                                "visibility": "off"
-                            }
-                        },
-                        {
-                            "featureType": "manmade",
-                            "elementType": "all",
-                            "stylers": {
-                                "visibility": "off"
-                            }
-                        },
-                        {
+                        }, {
                             "featureType": "local",
-                            "elementType": "all",
-                            "stylers": {
-                                "visibility": "off"
-                            }
-                        },
-                        {
-                            "featureType": "arterial",
                             "elementType": "labels",
                             "stylers": {
                                 "visibility": "off"
                             }
-                        },
-                        {
-                            "featureType": "boundary",
-                            "elementType": "geometry.fill",
-                            "stylers": {
-                                "color": "#029fd4"
-                            }
-                        },
-                        {
-                            "featureType": "building",
+                        }, {
+                            "featureType": "water",
                             "elementType": "all",
                             "stylers": {
-                                "color": "#1a5787"
+                                "color": "#d1e5ff"
                             }
-                        },
-                        {
-                            "featureType": "label",
-                            "elementType": "all",
+                        }, {
+                            "featureType": "poi",
+                            "elementType": "labels",
                             "stylers": {
                                 "visibility": "off"
+                            }
+                        }, {
+                            "featureType": "land",
+                            "elementType": "all",
+                            "stylers": {
+                                "color": "#cfe2f3ff",
+                                "lightness": -50,
+                                "saturation": -8
+                            }
+                        }, {
+                            "featureType": "water",
+                            "elementType": "all",
+                            "stylers": {
+                                "color": "#0b5394ff",
+                                "weight": "8",
+                                "lightness": 41,
+                                "saturation": 13
                             }
                         }
                     ]
@@ -333,7 +352,7 @@
                         value: 2
                     },
                     symbolSize: function (val) {
-                        return val[2] / 700;
+                        return val[2] / 100;
                     },
                     label: {
                         formatter: '{b}',
@@ -348,19 +367,20 @@
                             show: true
                         }
                     }
-                },
-                {
-                    type: 'custom',
-                    coordinateSystem: 'bmap',
-                    renderItem: renderItem,
-                    itemStyle: {
-                        opacity: 0.5
-                    },
-                    animation: false,
-                    silent: true,
-                    data: [0],
-                    z: -10
                 }
+                // ,
+                // {
+                //     type: 'custom',
+                //     coordinateSystem: 'bmap',
+                //     renderItem: renderItem,
+                //     itemStyle: {
+                //         opacity: 0.5
+                //     },
+                //     animation: false,
+                //     silent: true,
+                //     data: [0],
+                //     z: -10
+                // }
             ]
         };
         
@@ -368,6 +388,8 @@
 
         // 获取百度地图实例
         var bmap = echartsRecords.getModel().getComponent('bmap').getBMap();
+        bmap.setMaxZoom(18)
+        bmap.setMinZoom(1)
         //使用百度地图自带的控件
         //bmap.addControl(new BMap.MapTypeControl());
         var top_left_control = new BMap.ScaleControl({anchor: BMAP_ANCHOR_TOP_LEFT});// 左上角，添加比例尺

@@ -93,8 +93,8 @@ def chart1(request):
             sxarr = [
                 {'name':'Net capacity (MW)','value':row["Net capacity (MW)"]},
                 {'name':'Commissioning Year','value':str(row["Commissioning Year"])},
-                {'name':'Energy','value':row["Energy "]},
-                {'name':'Status','value':row["Status"]}
+                {'name':'Energy','value':row["Energy"]},
+                {'name':'Status','value':row["Plant status"]}
                 ]
             data_obj['value'] = sxarr
             ll = []
@@ -102,7 +102,13 @@ def chart1(request):
             ll.append(row["Latitude"])
             geo_obj[row["Id"]] = ll
             data.append(data_obj)
-        return success(data={'data':data,'geoCoordMap':geo_obj})
+        #处理表单数据
+        df = sheet.dropna(axis=0,how='any')
+        zones = df['Zone'].drop_duplicates().tolist()
+        countries = df['Country'].drop_duplicates().tolist()
+        status = df['Plant status'].drop_duplicates().tolist()
+        energys = df['Energy'].drop_duplicates().tolist()
+        return success(data={'data':data,'geoCoordMap':geo_obj,'zones':zones,'countries':countries,'status':status,'energys':energys})
     except Exception as e:
         return error(message=str(e))
 
