@@ -78,10 +78,42 @@ def select_file_list(request,file_prefix):
 
 def chart1(request):
     try:
-        file_id = request.GET['file_id']
+        file_id = request.POST.get('file_select',None)
+        zone = request.POST.get('zone_select',None)
+        country = request.POST.get('country_select',None)
+        status = request.POST.get('status_select',None)
+        start_date = request.POST.get('start_date',None)
+        end_date = request.POST.get('end_date',None)
+        energy = request.POST.getlist('energy',None)
         file = Files.objects.get(id=file_id)
         excel_path = os.path.join(settings.MEDIA_ROOT,file.title)
         sheet = pd.read_excel(excel_path,header = 0)
+
+        #处理表单数据
+        df = sheet.dropna(axis=0,how='any')
+        f_zones = df['Zone'].drop_duplicates().tolist()
+        f_countries = df['Country'].drop_duplicates().tolist()
+        f_status = df['Plant status'].drop_duplicates().tolist()
+
+        li = df['Energy'].drop_duplicates().dropna().str.split('/').tolist()
+        li = [i for item in li for i in item]
+        li=[x.strip() for x in li]
+        f_energys = list(set(li))
+
+        if(zone and zone !='---请选择区域---'):
+            sheet = sheet[sheet['Zone']==zone]
+        if(country and country !='---请选择国家---'):
+            sheet = sheet[sheet['Country']==country]
+        if(status and status !='---请选择状态---'):
+            sheet = sheet[sheet['Plant status']==status]
+        if(start_date and start_date != ''):
+            sheet['Commissioning Year'] = sheet['Commissioning Year'].dropna().astype(str).str[0:4].astype(int)
+            sheet = sheet[sheet['Commissioning Year']>= int(start_date)]
+        if(end_date and end_date != ''):
+            sheet['Commissioning Year'] = sheet['Commissioning Year'].dropna().astype(str).str[0:4].astype(int)
+            sheet = sheet[sheet['Commissioning Year']<= int(end_date)]
+        if(energy and energy != ''):
+            sheet = sheet[sheet['Energy'].fillna('0').str.contains('|'.join(energy))]
         print(sheet)
         data = []
         geo_obj = {}
@@ -102,13 +134,7 @@ def chart1(request):
             ll.append(row["Latitude"])
             geo_obj[row["Id"]] = ll
             data.append(data_obj)
-        #处理表单数据
-        df = sheet.dropna(axis=0,how='any')
-        zones = df['Zone'].drop_duplicates().tolist()
-        countries = df['Country'].drop_duplicates().tolist()
-        status = df['Plant status'].drop_duplicates().tolist()
-        energys = df['Energy'].drop_duplicates().tolist()
-        return success(data={'data':data,'geoCoordMap':geo_obj,'zones':zones,'countries':countries,'status':status,'energys':energys})
+        return success(data={'data':data,'geoCoordMap':geo_obj,'zones':f_zones,'countries':f_countries,'status':f_status,'energys':f_energys})
     except Exception as e:
         return error(message=str(e))
 

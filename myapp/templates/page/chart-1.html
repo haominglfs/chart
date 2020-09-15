@@ -52,21 +52,21 @@
                             <div class="layui-inline">
                                 <label class="layui-form-label">区域</label>
                                 <div class="layui-input-inline">
-                                    <select name="zone_select" id="zone_select" lay-filter="zone_select">
+                                    <select name="zone_select" id="zone_select" lay-filter="chart_select">
                                     </select>
                                 </div>
                             </div>
                             <div class="layui-inline">
                                 <label class="layui-form-label">国家</label></label>
                                 <div class="layui-input-inline">
-                                    <select name="country_select" id="country_select" lay-filter="country_select">
+                                    <select name="country_select" id="country_select" lay-filter="chart_select">
                                     </select>
                                 </div>
                             </div>
                             <div class="layui-inline">
                                 <label class="layui-form-label">状态</label></label>
                                 <div class="layui-input-inline">
-                                    <select name="status_select" id="status_select" lay-filter="status_select">
+                                    <select name="status_select" id="status_select" lay-filter="chart_select">
                                     </select>
                                 </div>
                             </div>
@@ -86,9 +86,6 @@
                         <div class="layui-form-item" pane="">
                             <label class="layui-form-label">类别</label>
                             <div class="layui-input-block" id="energy">
-                                <input type="checkbox" name="like1[write]" lay-skin="primary" title="写作" checked="">
-                                <input type="checkbox" name="like1[read]" lay-skin="primary" title="阅读">
-                                <input type="checkbox" name="like1[game]" lay-skin="primary" title="游戏" disabled="">
                             </div>
                         </div>
                         
@@ -101,7 +98,7 @@
                 <div class="layui-card">
                     <!-- <div class="layui-card-header"><i class="fa fa-line-chart icon"></i>报表统计</div> -->
                     <div class="layui-card-body" id="echart_card">
-                        <div id="echarts-records" style="width: 2000px;height:1000px"></div>
+                        <div id="echarts-records" style="width: 1000px;height:500px"></div>
                     </div>
                   </div>
             </div>
@@ -126,14 +123,54 @@
 
         miniTab.listen();
 
+        function getViewPort(geoCoordMap,option){
+            var points = []
+            var ll = Object.values(geoCoordMap)
+            ll.forEach(function (item, index, array) {
+                points.push(new BMap.Point(item[0], item[1]))
+            });
+            var view = bmap.getViewport(points);
+            option.bmap.center = [view.center.lng,view.center.lat]
+            option.bmap.zoom = view.zoom
+        }
+
         //日期
         laydate.render({
             elem: '#start_date',
-            type: 'year'
+            type: 'year',
+            done: function(value, date, endDate){
+                $("#start_date").val(value)
+                var url = '/myapp/api/chart1';
+                submitForm(url,function(json){
+                    data = json.data.data;
+                    geoCoordMap = json.data.geoCoordMap
+                    getViewPort(geoCoordMap)
+                    option.series[0].data=convertData(data);
+                    getViewPort(geoCoordMap,option)
+                    echartsRecords.setOption(option);
+                },
+                function(json){
+                    console.log(json)
+                })
+            }
         });
         laydate.render({
             elem: '#end_date',
-            type: 'year'
+            type: 'year',
+            done: function(value, date, endDate){
+                $("#end_date").val(value)
+                var url = '/myapp/api/chart1';
+                submitForm(url,function(json){
+                    data = json.data.data;
+                    geoCoordMap = json.data.geoCoordMap
+                    option.series[0].data=convertData(data);
+                    getViewPort(geoCoordMap,option)
+                    echartsRecords.setOption(option);
+                },
+                function(json){
+                    console.log(json)
+                })
+            }
         });
 
         //获取下拉文件数据
@@ -152,7 +189,7 @@
             $dom.empty();
             $dom.append($("<option>---"+tip+"---</option>"));
             $.each(data, function( key,val ) {
-                var tplInput=$("<option  value="+val+">"+val+"</option>");
+                var tplInput=$("<option  value='"+val+"'>"+val+"</option>");
                 $dom.append(tplInput);
             });
             form.render()
@@ -161,16 +198,32 @@
         function genCheckBox($dom,data){
             $dom.empty();
             $.each(data, function( key,val ) {
-                var tplInput=$("<input type='checkbox' name='like1["+val+"]' lay-skin='primary' title="+val+" checked='' />");
+                var tplInput=$("<input type='checkbox' name='energy' lay-skin='primary' value="+val+" title="+val+" checked='' />");
                 $dom.append(tplInput);
             });
             form.render()
         }
 
+        function submitForm(url,success,error){
+            $.ajax({
+                type: "POST",
+                data: $("#chart1_form").serialize(),
+                url: url,
+                dataType:'json',
+                success: success,
+                error: error
+            });
+        }
+
         form.on('select(file_select)', function(da){
             var file_id = $(da.elem).find("option:selected").val();
             var file_url = $(da.elem).find("option:selected").data('fileUrl')
-            $.getJSON("/myapp/api/chart1?file_id="+file_id, function(json) {
+            var url = '/myapp/api/chart1'
+            $("#zone_select").empty()
+            $("#country_select").empty()
+            $("#status_select").empty()
+            $("#energy").empty()
+            submitForm(url,function(json){
                 genSelect($("#zone_select"),json.data.zones,'请选择区域')
                 genSelect($("#country_select"),json.data.countries,'请选择国家')
                 genSelect($("#status_select"),json.data.status,'请选择状态')
@@ -179,24 +232,42 @@
                 geoCoordMap = json.data.geoCoordMap
                 option.title.subtext = file_url
                 option.series[0].data=convertData(data);
+                getViewPort(geoCoordMap,option)
                 echartsRecords.setOption(option);
-            });
+            },
+            function(json){
+                console.log(json)
+            })
         });
 
-        function submitForm(url,success,error){
-            $.ajax({
-                type: "POST",
-                data: $("#chart1_form").serialize(),
-                url: url,
-                dataType:'json',
-                success: success(data),
-                error: error(data)
-            });
-        }
-
-        form.on('select(zone_select)',function(da){
+        form.on('select(chart_select)',function(da){
             var url = '/myapp/api/chart1';
+            submitForm(url,function(json){
+                data = json.data.data;
+                geoCoordMap = json.data.geoCoordMap
+                option.series[0].data=convertData(data);
+                getViewPort(geoCoordMap,option)
+                echartsRecords.setOption(option);
+            },
+            function(json){
+                console.log(json)
+            })
         })
+
+        form.on('checkbox',function(da){
+            var url = '/myapp/api/chart1';
+            submitForm(url,function(json){
+                data = json.data.data;
+                geoCoordMap = json.data.geoCoordMap
+                option.series[0].data=convertData(data);
+                getViewPort(geoCoordMap,option)
+                echartsRecords.setOption(option);
+            },
+            function(json){
+                console.log(json)
+            })
+        })
+
         /**
          * 报表功能
          */
@@ -214,39 +285,9 @@
                     });
                 }
             }
+            console.log(res)
             return res;
         };
-
-        function renderItem(params, api) {
-        var coords = [
-            [116.7,39.53],
-            [103.73,36.03],
-            [112.91,27.87],
-            [120.65,28.01],
-            [119.57,39.95]
-        ];
-        var points = [];
-        for (var i = 0; i < coords.length; i++) {
-            points.push(api.coord(coords[i]));
-        }
-        var color = api.visual('color');
-
-        return {
-            type: 'polygon',
-            shape: {
-                points: echarts.graphic.clipPointsByRect(points, {
-                    x: params.coordSys.x,
-                    y: params.coordSys.y,
-                    width: params.coordSys.width,
-                    height: params.coordSys.height
-                })
-            },
-            style: api.style({
-                fill: color,
-                stroke: echarts.color.lift(color)
-            })
-        };
-    }
 
         option = {
             backgroundColor: 'transparent',
@@ -278,7 +319,7 @@
                 }
             },
             bmap: {
-                center: [104.114129, 37.550339],
+                //center: [104.114129, 37.550339],
                 //mapType: 'china',
                 zoom: 1,// 百度地图缩放等级，数字越大，放大越大，地图比例尺越小
                 roam: true, // 是否开启拖拽缩放，可以只设置 'scale' 或者 'move' true
@@ -359,8 +400,9 @@
                         position: 'right',
                         fontSize :20
                     },
-                    itemStyle: {
-                        color: '#ddb926'
+                    itemStyle: function(item){
+                        debugger;
+                        return '#ccc'
                     },
                     emphasis: {
                         label: {
@@ -368,19 +410,6 @@
                         }
                     }
                 }
-                // ,
-                // {
-                //     type: 'custom',
-                //     coordinateSystem: 'bmap',
-                //     renderItem: renderItem,
-                //     itemStyle: {
-                //         opacity: 0.5
-                //     },
-                //     animation: false,
-                //     silent: true,
-                //     data: [0],
-                //     z: -10
-                // }
             ]
         };
         
