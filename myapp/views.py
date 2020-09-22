@@ -8,6 +8,7 @@ from django.core import serializers
 import json
 import pandas as pd
 import os
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -80,15 +81,21 @@ def muli_select(request):
     try:
         file_id = request.GET.get('file_select',None)
         cat_text = request.GET.get('cat_text',None)
+        page = int(request.GET['page'])
+        limit = int(request.GET['limit'])
+        name = request.GET.get('name',None)
         file = Files.objects.get(id=file_id)
         excel_path = os.path.join(settings.MEDIA_ROOT,file.title)
         df = pd.read_excel(excel_path,header = 0)
         df['Plant status'] = df['Plant status'].str.split('/').str[0].str.strip()
+        if(name):
+            df = df[df[cat_text].fillna('0').str.contains(pat=name,case=False)]
         f_data = df[cat_text].dropna().drop_duplicates().to_list()
         datas = []
         for data in f_data:
             datas.append({'name':data})
-        return success(data=datas,count=len(f_data))
+        p = Paginator(datas, limit)
+        return success(data=p.page(page).object_list,count=p.count)
     except Exception as e:
         return error(message=str(e))
 

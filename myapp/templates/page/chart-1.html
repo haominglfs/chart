@@ -101,7 +101,7 @@
                 <div class="layui-card">
                     <!-- <div class="layui-card-header"><i class="fa fa-line-chart icon"></i>报表统计</div> -->
                     <div class="layui-card-body" id="echart_card">
-                        <div id="echarts-records" style="width: 1000px;height:500px"></div>
+                        <div id="echarts-records" style="width: 1500px;height:500px"></div>
                     </div>
                   </div>
             </div>
@@ -229,12 +229,12 @@
                 elem: '#zone_select',
                 searchKey: 'name',
                 checkedKey: 'name',
-                searchPlaceholder: 'zone',
+                //searchPlaceholder: 'zone',
                 table: {
                     url: select_url+"&cat_text=Zone",
                     cols: [[
                         { type: 'checkbox' },
-                        { field: 'name', title: '名称', width: 200 }
+                        { field: 'name', title: '名称' }
                     ]]
                 },
                 done: function (elem, data) {
@@ -261,12 +261,12 @@
                 elem: '#country_select',
                 searchKey: 'name',
                 checkedKey: 'name',
-                searchPlaceholder: 'zone',
+                //searchPlaceholder: 'zone',
                 table: {
                     url: select_url+"&cat_text=Country",
                     cols: [[
                         { type: 'checkbox' },
-                        { field: 'name', title: '名称', width: 200 }
+                        { field: 'name', title: '名称'}
                     ]]
                 },
                 done: function (elem, data) {
@@ -293,12 +293,12 @@
                 elem: '#status_select',
                 searchKey: 'name',
                 checkedKey: 'name',
-                searchPlaceholder: 'status',
+                //searchPlaceholder: 'status',
                 table: {
                     url: select_url+"&cat_text="+encodeURIComponent("Plant status"),
                     cols: [[
                         { type: 'checkbox' },
-                        { field: 'name', title: '名称', width: 200 }
+                        { field: 'name', title: '名称' }
                     ]]
                 },
                 done: function (elem, data) {
@@ -500,9 +500,9 @@
                 }
             },
             bmap: {
-                //center: [104.114129, 37.550339],
+                center: [104.114129, 37.550339],
                 //mapType: 'china',
-                zoom: 1,// 百度地图缩放等级，数字越大，放大越大，地图比例尺越小
+                zoom: 3,// 百度地图缩放等级，数字越大，放大越大，地图比例尺越小
                 roam: 'move', // 是否开启拖拽缩放，可以只设置 'scale' 或者 'move' true
                 mapStyle: {
                     styleJson: [
