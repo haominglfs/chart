@@ -33,6 +33,12 @@
         .layuimini-notice-title {line-height:28px;font-size:14px;}
         .layuimini-notice-extra {position:absolute;top:50%;margin-top:-8px;right:16px;display:inline-block;height:16px;color:#999;}
     </style>
+    <style>
+        /* 隐藏地图bmap左下角logo */
+        .anchorBL{
+        display:none;
+        }
+    </style>
 </head>
 <body>
 <div class="layuimini-container">
@@ -52,22 +58,19 @@
                             <div class="layui-inline">
                                 <label class="layui-form-label">区域</label>
                                 <div class="layui-input-inline">
-                                    <select name="zone_select" id="zone_select" lay-filter="chart_select">
-                                    </select>
+                                    <input type="text" name="zone_select" placeholder="请输入" autocomplete="off" class="layui-input" id="zone_select"  value="" ts-selected="">
                                 </div>
                             </div>
                             <div class="layui-inline">
                                 <label class="layui-form-label">国家</label></label>
                                 <div class="layui-input-inline">
-                                    <select name="country_select" id="country_select" lay-filter="chart_select">
-                                    </select>
+                                    <input type="text" name="country_select" placeholder="请输入" autocomplete="off" class="layui-input" id="country_select"  value="" ts-selected="">
                                 </div>
                             </div>
                             <div class="layui-inline">
                                 <label class="layui-form-label">状态</label></label>
                                 <div class="layui-input-inline">
-                                    <select name="status_select" id="status_select" lay-filter="chart_select">
-                                    </select>
+                                    <input type="text" name="status_select" placeholder="请输入" autocomplete="off" class="layui-input" id="status_select"  value="" ts-selected="">
                                 </div>
                             </div>
                         </div>
@@ -113,11 +116,12 @@
 <script src="{% static 'lib/layui-v2.5.5/layui.js'%}" charset="utf-8"></script>
 <script src="{% static 'js/lay-config.js'%}?v=1.0.4" charset="utf-8"></script>
 <script>
-    layui.use(['layer', 'miniTab','form','laydate'], function () {
+    layui.use(['layer', 'miniTab','form','laydate','tableSelect'], function () {
         var $ = layui.jquery,
             layer = layui.layer,
             form = layui.form,
             laydate = layui.laydate,
+            tableSelect = layui.tableSelect,
             miniTab = layui.miniTab;
             //echarts = layui.echarts;
 
@@ -133,6 +137,7 @@
             option.bmap.center = [view.center.lng,view.center.lat]
             option.bmap.zoom = view.zoom
         }
+        
 
         //日期
         laydate.render({
@@ -218,20 +223,121 @@
         form.on('select(file_select)', function(da){
             var file_id = $(da.elem).find("option:selected").val();
             var file_url = $(da.elem).find("option:selected").data('fileUrl')
+            var select_url = "/myapp/api/muli_select?file_select="+file_id
+            //区域下拉
+            tableSelect.render({
+                elem: '#zone_select',
+                searchKey: 'name',
+                checkedKey: 'name',
+                searchPlaceholder: 'zone',
+                table: {
+                    url: select_url+"&cat_text=Zone",
+                    cols: [[
+                        { type: 'checkbox' },
+                        { field: 'name', title: '名称', width: 200 }
+                    ]]
+                },
+                done: function (elem, data) {
+                    var NEWJSON = []
+                    layui.each(data.data, function (index, item) {
+                        NEWJSON.push(item.name)
+                    })
+                    elem.val(NEWJSON.join(","))
+                    var url = '/myapp/api/chart1';
+                    submitForm(url,function(json){
+                        data = json.data.data;
+                        geoCoordMap = json.data.geoCoordMap
+                        option.series[0].data=convertData(data);
+                        getViewPort(geoCoordMap,option)
+                        echartsRecords.setOption(option);
+                    },
+                    function(json){
+                        console.log(json)
+                    })
+                }
+            });
+            //国家下拉
+            tableSelect.render({
+                elem: '#country_select',
+                searchKey: 'name',
+                checkedKey: 'name',
+                searchPlaceholder: 'zone',
+                table: {
+                    url: select_url+"&cat_text=Country",
+                    cols: [[
+                        { type: 'checkbox' },
+                        { field: 'name', title: '名称', width: 200 }
+                    ]]
+                },
+                done: function (elem, data) {
+                    var NEWJSON = []
+                    layui.each(data.data, function (index, item) {
+                        NEWJSON.push(item.name)
+                    })
+                    elem.val(NEWJSON.join(","))
+                    var url = '/myapp/api/chart1';
+                    submitForm(url,function(json){
+                        data = json.data.data;
+                        geoCoordMap = json.data.geoCoordMap
+                        option.series[0].data=convertData(data);
+                        getViewPort(geoCoordMap,option)
+                        echartsRecords.setOption(option);
+                    },
+                    function(json){
+                        console.log(json)
+                    })
+                }
+            });
+            //状态下拉
+            tableSelect.render({
+                elem: '#status_select',
+                searchKey: 'name',
+                checkedKey: 'name',
+                searchPlaceholder: 'status',
+                table: {
+                    url: select_url+"&cat_text="+encodeURIComponent("Plant status"),
+                    cols: [[
+                        { type: 'checkbox' },
+                        { field: 'name', title: '名称', width: 200 }
+                    ]]
+                },
+                done: function (elem, data) {
+                    var NEWJSON = []
+                    layui.each(data.data, function (index, item) {
+                        NEWJSON.push(item.name)
+                    })
+                    elem.val(NEWJSON.join(","))
+                    var url = '/myapp/api/chart1';
+                    submitForm(url,function(json){
+                        data = json.data.data;
+                        geoCoordMap = json.data.geoCoordMap
+                        option.series[0].data=convertData(data);
+                        getViewPort(geoCoordMap,option)
+                        echartsRecords.setOption(option);
+                    },
+                    function(json){
+                        console.log(json)
+                    })
+                }
+            })
+
             var url = '/myapp/api/chart1'
             $("#zone_select").empty()
             $("#country_select").empty()
             $("#status_select").empty()
             $("#energy").empty()
             submitForm(url,function(json){
-                genSelect($("#zone_select"),json.data.zones,'请选择区域')
-                genSelect($("#country_select"),json.data.countries,'请选择国家')
-                genSelect($("#status_select"),json.data.status,'请选择状态')
+                //genSelect($("#zone_select"),json.data.zones,'请选择区域')
+                //genSelect($("#country_select"),json.data.countries,'请选择国家')
+                //genSelect($("#status_select"),json.data.status,'请选择状态')
                 genCheckBox($("#energy"),json.data.energys)
+                alldata = json.data;
                 data = json.data.data;
                 geoCoordMap = json.data.geoCoordMap
                 option.title.subtext = file_url
                 option.series[0].data=convertData(data);
+                option.visualMap[0].categories = alldata.energys
+                option.visualMap[0].inRange.color = gradientColor('#FFD700','#800000',100,alldata.energys.length);
                 getViewPort(geoCoordMap,option)
                 echartsRecords.setOption(option);
             },
@@ -268,24 +374,102 @@
             })
         })
 
+        function istyle(val){
+            item = val.data.value;
+            if(item[4] == 'Coal'){
+                return '#333'
+            }
+            return '#ccc'
+        }
+
+        function colorToRgb(hexColor) {
+            let reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/
+            let sColor = hexColor.toLowerCase()
+            if (sColor && reg.test(sColor)) {
+                if (sColor.length === 4) {
+                let sColorNew = "#"
+                for (let i = 1; i < 4; i += 1) {
+                    sColorNew += sColor.slice(i, i + 1).concat(sColor.slice(i, i + 1))
+                }
+                sColor = sColorNew
+                }
+                //处理六位的颜色值
+                let sColorChange = []
+                for (let i = 1; i < 7; i += 2) {
+                sColorChange.push(parseInt("0x" + sColor.slice(i, i + 2)))
+                }
+                return sColorChange
+            } else {
+                return sColor
+            }
+        }
+
+
+        /**
+        * 生成渐变颜色值数组
+        * @param {String} startColor 开始颜色值（十六进制）
+        * @param {String} endColor 结束颜色值（十六进制）
+        * @param {Number} count 生成颜色个数
+        * @param {Number} step 生成步数
+        * @return {Array} 渐变颜色数组
+        */
+        function gradientColor(startColor, endColor, count, step) {
+            let startRGB = colorToRgb(startColor), //转换为rgb数组模式
+                startR = startRGB[0],
+                startG = startRGB[1],
+                startB = startRGB[2]
+
+            let endRGB = colorToRgb(endColor),
+                endR = endRGB[0],
+                endG = endRGB[1],
+                endB = endRGB[2]
+
+            let sR = (endR - startR) / step, //总差值
+                sG = (endG - startG) / step,
+                sB = (endB - startB) / step
+
+            let generateRStr = (r, g, b) => {
+                return 'rgb(' + parseInt(r) + ',' + parseInt(g) + ',' + parseInt(b) + ')'
+            }
+
+            let colorArr = []
+            for (let i = 0; i < step; i++) {
+                // 计算每一步的rgb值 
+                if (count % 2 !== 0 && i == 0) {
+                colorArr.push(generateRStr(startR, startG, startB))
+                } else if (count % 2 !== 0 && i == step - 1) {
+                colorArr.push(generateRStr(endR, endG, endB))
+                } else {
+                colorArr.push(generateRStr(sR * i + startR, sG * i + startG, sB * i + startB))
+                }
+            }
+            return colorArr
+        }
+
         /**
          * 报表功能
          */
         var echartsRecords = echarts.init(document.getElementById('echarts-records'), 'walden');
         var data = [];
+        alldata = '';
         var geoCoordMap = {};
+
         var convertData = function (data) {
             var res = [];
             for (var i = 0; i < data.length; i++) {
                 var geoCoord = geoCoordMap[data[i].name];
                 if (geoCoord) {
+                    geoCoord = geoCoord.concat(data[i].value[0].value)
+                    .concat(data[i].value[1].value)
+                    .concat(data[i].value[2].value)
+                    .concat(data[i].value[3].value)
                     res.push({
-                        name: data[i].name,
-                        value: geoCoord.concat(data[i].value[0].value)
+                        //name: data[i].name,
+                        name: data[i].value[0].value,
+                        value: geoCoord
                     });
                 }
             }
-            console.log(res)
             return res;
         };
 
@@ -301,19 +485,16 @@
             tooltip : {
                 trigger: 'item',
                 formatter: function(params, ticket, callback){
+                    var itemArr = ['Net capacity (MW)','Commissioning Year','Energy','Status']
                     var toolTiphtml = ''
                     var point = new BMap.Point(params.data.value[0],params.data.value[1]);
                     gc.getLocation(point, function (rs) {//根据经纬度获取地址信息
                         var address = rs.address;
-                        for(var i = 0;i<data.length;i++){
-                            if(params.name==data[i].name){
-                                toolTiphtml += address+':<br>'
-                                for(var j = 0;j<data[i].value.length;j++){
-                                    toolTiphtml+=data[i].value[j].name+': '+data[i].value[j].value+"<br>"
-                                }
-                                callback(ticket, toolTiphtml);
-                            }
+                        toolTiphtml += address+':<br>'
+                        for(var j = 0;j<itemArr.length;j++){
+                            toolTiphtml+=itemArr[j]+': '+params.data.value[j+2]+"<br>"
                         }
+                        callback(ticket, toolTiphtml);
                     });
                     return 'loading';//内容还没返回时显示的内容
                 }
@@ -322,7 +503,7 @@
                 //center: [104.114129, 37.550339],
                 //mapType: 'china',
                 zoom: 1,// 百度地图缩放等级，数字越大，放大越大，地图比例尺越小
-                roam: true, // 是否开启拖拽缩放，可以只设置 'scale' 或者 'move' true
+                roam: 'move', // 是否开启拖拽缩放，可以只设置 'scale' 或者 'move' true
                 mapStyle: {
                     styleJson: [
                         {
@@ -382,6 +563,33 @@
                     ]
                 }
             },
+            visualMap: [
+                {
+                    type: 'piecewise',
+                    dimension: 4,       // series.data 的第四个维度（即 value[3]）被映射
+                    categories: [],
+                    orient :'horizontal',
+                    inRange: {       // 选中范围外的视觉配置
+                        color: [],
+                        //symbolSize: [300, 1000]
+                        colorLightness: [0.2, 1]
+                    },
+                    outOfRange: {
+                        color: 'red'
+                        //opacity :0
+                    }
+                },
+                {
+                    type: 'continuous',
+                    dimension: 2,       // series.data 的第四个维度（即 value[3]）被映射
+                    min: 0,
+                    max: 10000,
+                    show: false,
+                    inRange: {       // 选中范围外的视觉配置
+                        symbolSize: [10, 50]
+                    }
+                },
+            ],
             series : [
                 {
                     name: 'Net capacity',
@@ -392,17 +600,16 @@
                     encode: {
                         value: 2
                     },
-                    symbolSize: function (val) {
-                        return val[2] / 100;
-                    },
+                    //symbolSize: function (val) {
+                        //return val[2] / 100;
+                    //},
                     label: {
                         formatter: '{b}',
                         position: 'right',
                         fontSize :20
                     },
-                    itemStyle: function(item){
-                        debugger;
-                        return '#ccc'
+                    itemStyle: {
+                        color: istyle
                     },
                     emphasis: {
                         label: {

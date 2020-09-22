@@ -76,6 +76,22 @@ def select_file_list(request,file_prefix):
         return error(message=str(e))
     return success(data=list(files))
 
+def muli_select(request):
+    try:
+        file_id = request.GET.get('file_select',None)
+        cat_text = request.GET.get('cat_text',None)
+        file = Files.objects.get(id=file_id)
+        excel_path = os.path.join(settings.MEDIA_ROOT,file.title)
+        df = pd.read_excel(excel_path,header = 0)
+        df['Plant status'] = df['Plant status'].str.split('/').str[0].str.strip()
+        f_data = df[cat_text].dropna().drop_duplicates().to_list()
+        datas = []
+        for data in f_data:
+            datas.append({'name':data})
+        return success(data=datas,count=len(f_data))
+    except Exception as e:
+        return error(message=str(e))
+
 def chart1(request):
     try:
         file_id = request.POST.get('file_select',None)
@@ -88,29 +104,33 @@ def chart1(request):
         file = Files.objects.get(id=file_id)
         excel_path = os.path.join(settings.MEDIA_ROOT,file.title)
         sheet = pd.read_excel(excel_path,header = 0)
-
+        #预处理sheet
+        sheet['Plant status'] = sheet['Plant status'].str.split('/').str[0].str.strip()
+        sheet['Energy'] = sheet['Energy'].str.split('/').str[0].str.strip()
+        sheet['Commissioning Year'] = sheet['Commissioning Year'].dropna().astype(str).str[0:4].astype(int)
         #处理表单数据
-        df = sheet.dropna(axis=0,how='any')
-        f_zones = df['Zone'].drop_duplicates().tolist()
-        f_countries = df['Country'].drop_duplicates().tolist()
-        f_status = df['Plant status'].drop_duplicates().tolist()
+        #df = sheet.dropna(axis=0,how='any')
+        df = sheet
+        #f_zones = df['Zone'].dropna().drop_duplicates().tolist()
+        #f_countries = df['Country'].dropna().drop_duplicates().tolist()
+        #f_status = df['Plant status'].dropna().drop_duplicates().tolist()
+        f_energys = df['Energy'].dropna().drop_duplicates().tolist()
+        # li = df['Energy'].drop_duplicates().dropna().str.split('/').tolist()
+        # li = [i for item in li for i in item]
+        # li=[x.strip() for x in li]
+        # f_energys = list(set(li))
 
-        li = df['Energy'].drop_duplicates().dropna().str.split('/').tolist()
-        li = [i for item in li for i in item]
-        li=[x.strip() for x in li]
-        f_energys = list(set(li))
-
-        if(zone and zone !='---请选择区域---'):
-            sheet = sheet[sheet['Zone']==zone]
-        if(country and country !='---请选择国家---'):
-            sheet = sheet[sheet['Country']==country]
-        if(status and status !='---请选择状态---'):
-            sheet = sheet[sheet['Plant status']==status]
+        if(zone and zone != ''):
+            sheet = sheet[sheet['Zone'].fillna('0').str.contains('|'.join(zone.split(',')))]
+        if(country and country != ''):
+            sheet = sheet[sheet['Country'].fillna('0').str.contains('|'.join(country.split(',')))]
+        if(status and status != ''):
+            sheet = sheet[sheet['Plant status'].fillna('0').str.contains('|'.join(status.split(',')))]
         if(start_date and start_date != ''):
-            sheet['Commissioning Year'] = sheet['Commissioning Year'].dropna().astype(str).str[0:4].astype(int)
+            #sheet['Commissioning Year'] = sheet['Commissioning Year'].dropna().astype(str).str[0:4].astype(int)
             sheet = sheet[sheet['Commissioning Year']>= int(start_date)]
         if(end_date and end_date != ''):
-            sheet['Commissioning Year'] = sheet['Commissioning Year'].dropna().astype(str).str[0:4].astype(int)
+            #sheet['Commissioning Year'] = sheet['Commissioning Year'].dropna().astype(str).str[0:4].astype(int)
             sheet = sheet[sheet['Commissioning Year']<= int(end_date)]
         if(energy and energy != ''):
             sheet = sheet[sheet['Energy'].fillna('0').str.contains('|'.join(energy))]
@@ -134,7 +154,7 @@ def chart1(request):
             ll.append(row["Latitude"])
             geo_obj[row["Id"]] = ll
             data.append(data_obj)
-        return success(data={'data':data,'geoCoordMap':geo_obj,'zones':f_zones,'countries':f_countries,'status':f_status,'energys':f_energys})
+        return success(data={'data':data,'geoCoordMap':geo_obj,'energys':f_energys})
     except Exception as e:
         return error(message=str(e))
 
