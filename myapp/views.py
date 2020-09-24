@@ -111,10 +111,11 @@ def chart1(request):
         file = Files.objects.get(id=file_id)
         excel_path = os.path.join(settings.MEDIA_ROOT,file.title)
         sheet = pd.read_excel(excel_path,header = 0)
+        sheet.columns = sheet.columns.str.strip()
         #预处理sheet
         sheet['Plant status'] = sheet['Plant status'].str.split('/').str[0].str.strip()
         sheet['Energy'] = sheet['Energy'].str.split('/').str[0].str.strip()
-        sheet['Commissioning Year'] = sheet['Commissioning Year'].dropna().astype(str).str[0:4].astype(int)
+        sheet['Commissioning Year'] = sheet['Commissioning Year'].fillna('0').astype(str).str[0:4].astype(int)
         #处理表单数据
         #df = sheet.dropna(axis=0,how='any')
         df = sheet
@@ -141,7 +142,6 @@ def chart1(request):
             sheet = sheet[sheet['Commissioning Year']<= int(end_date)]
         if(energy and energy != ''):
             sheet = sheet[sheet['Energy'].fillna('0').str.contains('|'.join(energy))]
-        print(sheet)
         data = []
         geo_obj = {}
         for index,row in sheet.iterrows():
