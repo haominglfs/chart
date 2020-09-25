@@ -87,7 +87,10 @@ def muli_select(request):
         file = Files.objects.get(id=file_id)
         excel_path = os.path.join(settings.MEDIA_ROOT,file.title)
         df = pd.read_excel(excel_path,header = 0)
+        df.columns = df.columns.str.strip()
+        df.dropna(subset=['Latitude', 'Longitude'],inplace=True)
         df['Plant status'] = df['Plant status'].str.split('/').str[0].str.strip()
+        df['Energy'] = df['Energy'].str.split('/').str[0].str.strip()
         if(name):
             df = df[df[cat_text].fillna('0').str.contains(pat=name,case=False)]
         f_data = df[cat_text].dropna().drop_duplicates().to_list()
@@ -107,11 +110,13 @@ def chart1(request):
         status = request.POST.get('status_select',None)
         start_date = request.POST.get('start_date',None)
         end_date = request.POST.get('end_date',None)
-        energy = request.POST.getlist('energy',None)
+        energy = request.POST.get('energy_select',None)
         file = Files.objects.get(id=file_id)
         excel_path = os.path.join(settings.MEDIA_ROOT,file.title)
         sheet = pd.read_excel(excel_path,header = 0)
         sheet.columns = sheet.columns.str.strip()
+        #删除经纬度为空的
+        sheet.dropna(subset=['Latitude', 'Longitude'],inplace=True)
         #预处理sheet
         sheet['Plant status'] = sheet['Plant status'].str.split('/').str[0].str.strip()
         sheet['Energy'] = sheet['Energy'].str.split('/').str[0].str.strip()
@@ -141,7 +146,8 @@ def chart1(request):
             #sheet['Commissioning Year'] = sheet['Commissioning Year'].dropna().astype(str).str[0:4].astype(int)
             sheet = sheet[sheet['Commissioning Year']<= int(end_date)]
         if(energy and energy != ''):
-            sheet = sheet[sheet['Energy'].fillna('0').str.contains('|'.join(energy))]
+            sheet = sheet[sheet['Energy'].fillna('0').str.contains('|'.join(energy.split(',')))]
+        print(sheet)
         data = []
         geo_obj = {}
         for index,row in sheet.iterrows():

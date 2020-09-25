@@ -45,55 +45,67 @@
     <div class="layuimini-main">
         <div class="layui-row layui-col-space15">
             <div class="layui-col-md12">
-                <div class="layui-card">
-                    <form class="layui-form" action="" id="chart1_form">
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">文件</label>
-                            <div class="layui-input-block">
-                                <select name="file_select" id="file_select" lay-filter="file_select">
-                                </select>
+                <div class="layui-collapse" lay-filter="test">
+                    <div class="layui-colla-item">
+                      <h2 class="layui-colla-title">查询列表</h2>
+                      <div class="layui-colla-content layui-show">
+                            <div class="layui-card">
+                                <form class="layui-form" action="" id="chart1_form">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">文件</label>
+                                        <div class="layui-input-block">
+                                            <select name="file_select" id="file_select" lay-filter="file_select">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-inline">
+                                            <label class="layui-form-label">区域</label>
+                                            <div class="layui-input-inline">
+                                                <input type="text" name="zone_select" placeholder="请输入" autocomplete="off" class="layui-input" id="zone_select"  value="" ts-selected="">
+                                            </div>
+                                        </div>
+                                        <div class="layui-inline">
+                                            <label class="layui-form-label">国家</label></label>
+                                            <div class="layui-input-inline">
+                                                <input type="text" name="country_select" placeholder="请输入" autocomplete="off" class="layui-input" id="country_select"  value="" ts-selected="">
+                                            </div>
+                                        </div>
+                                        <div class="layui-inline">
+                                            <label class="layui-form-label">状态</label></label>
+                                            <div class="layui-input-inline">
+                                                <input type="text" name="status_select" placeholder="请输入" autocomplete="off" class="layui-input" id="status_select"  value="" ts-selected="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-inline">
+                                            <label class="layui-form-label">类别</label></label>
+                                            <div class="layui-input-inline">
+                                                <input type="text" name="energy_select" placeholder="请输入" autocomplete="off" class="layui-input" id="energy_select"  value="" ts-selected="">
+                                            </div>
+                                        </div>
+                                        <div class="layui-inline">
+                                            <label class="layui-form-label">年度</label>
+                                            <div class="layui-input-inline">
+                                                <input type="text" name="start_date" id="start_date" lay-verify="start_date" placeholder="yyyy" autocomplete="off" class="layui-input">
+                                            </div>
+                                            <div class="layui-form-mid">-</div>
+                                            <div class="layui-input-inline">
+                                                <input type="text" name="end_date" id="end_date" lay-verify="end_date" placeholder="yyyy" autocomplete="off" class="layui-input">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="layui-form-item" pane="">
+                                        <label class="layui-form-label">类别</label>
+                                        <div class="layui-input-block" id="energy">
+                                        </div>
+                                    </div> -->
+                                </form>
                             </div>
-                        </div>
-                        <div class="layui-form-item">
-                            <div class="layui-inline">
-                                <label class="layui-form-label">区域</label>
-                                <div class="layui-input-inline">
-                                    <input type="text" name="zone_select" placeholder="请输入" autocomplete="off" class="layui-input" id="zone_select"  value="" ts-selected="">
-                                </div>
-                            </div>
-                            <div class="layui-inline">
-                                <label class="layui-form-label">国家</label></label>
-                                <div class="layui-input-inline">
-                                    <input type="text" name="country_select" placeholder="请输入" autocomplete="off" class="layui-input" id="country_select"  value="" ts-selected="">
-                                </div>
-                            </div>
-                            <div class="layui-inline">
-                                <label class="layui-form-label">状态</label></label>
-                                <div class="layui-input-inline">
-                                    <input type="text" name="status_select" placeholder="请输入" autocomplete="off" class="layui-input" id="status_select"  value="" ts-selected="">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="layui-form-item">
-                            <div class="layui-inline">
-                                <label class="layui-form-label">年度</label>
-                                <div class="layui-input-inline">
-                                    <input type="text" name="start_date" id="start_date" lay-verify="start_date" placeholder="yyyy" autocomplete="off" class="layui-input">
-                                </div>
-                                <div class="layui-form-mid">-</div>
-                                <div class="layui-input-inline">
-                                    <input type="text" name="end_date" id="end_date" lay-verify="end_date" placeholder="yyyy" autocomplete="off" class="layui-input">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="layui-form-item" pane="">
-                            <label class="layui-form-label">类别</label>
-                            <div class="layui-input-block" id="energy">
-                            </div>
-                        </div>
-                        
-                      </form>
-                </div>
+                      </div>
+                    </div>
+                </div>                
             </div>
         </div>
         <div class="layui-row layui-col-space15">
@@ -101,7 +113,7 @@
                 <div class="layui-card">
                     <!-- <div class="layui-card-header"><i class="fa fa-line-chart icon"></i>报表统计</div> -->
                     <div class="layui-card-body" id="echart_card">
-                        <div id="echarts-records" style="width: 1800px;height:800px"></div>
+                        <div id="echarts-records" style="height:700px;"></div>
                     </div>
                   </div>
             </div>
@@ -109,7 +121,6 @@
     </div>
 </div>
 <script src="{% static 'js/echarts.min.js'%}"></script>
-<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>
 <!--引入百度地图的jssdk，这里需要使用你在百度地图开发者平台申请的 ak-->
 <script src="http://api.map.baidu.com/api?v=2.0&ak=t6FhPX8kta44hnWYUb9wN3sam3p2G6AG"></script>
 <!-- 引入百度地图扩展 -->
@@ -128,6 +139,7 @@
 
         miniTab.listen();
 
+        //计算中心点和缩放级别
         function getViewPort(geoCoordMap,option){
             var points = []
             var ll = Object.values(geoCoordMap)
@@ -148,14 +160,20 @@
                 $("#start_date").val(value)
                 var url = '/myapp/api/chart1';
                 submitForm(url,function(json){
-                    data = json.data.data;
-                    geoCoordMap = json.data.geoCoordMap
-                    option.series[0].data=convertData(data);
-                    getViewPort(geoCoordMap,option)
-                    echartsRecords.setOption(option);
+                    if(json.code == 0){
+                        data = json.data.data;
+                        geoCoordMap = json.data.geoCoordMap
+                        option.series[0].data=convertData(data);
+                        getViewPort(geoCoordMap,option)
+                        echartsRecords.setOption(option);
+                    }else{
+                        console.log(json)
+                        layer.msg(json.msg)
+                    }
                 },
                 function(json){
                     console.log(json)
+                    layer.msg(json.msg)
                 })
             }
         });
@@ -166,28 +184,39 @@
                 $("#end_date").val(value)
                 var url = '/myapp/api/chart1';
                 submitForm(url,function(json){
-                    data = json.data.data;
-                    geoCoordMap = json.data.geoCoordMap
-                    option.series[0].data=convertData(data);
-                    getViewPort(geoCoordMap,option)
-                    echartsRecords.setOption(option);
+                    if(json.code == 0){
+                        data = json.data.data;
+                        geoCoordMap = json.data.geoCoordMap
+                        option.series[0].data=convertData(data);
+                        getViewPort(geoCoordMap,option)
+                        echartsRecords.setOption(option);
+                    }else{
+                        console.log(json)
+                        layer.msg(json.msg)
+                    }
                 },
                 function(json){
                     console.log(json)
+                    layer.msg(json.msg)
                 })
             }
         });
 
         //获取下拉文件数据
         $.getJSON("/myapp/api/file/select/chart1_", function(json) {
-            var data = json.data;
-            $("#file_select").empty();
-            $("#file_select").append($("<option>---请选择文件---</option>"));
-            $.each(data, function( key,val ) {
-                var tplInput=$("<option  value="+val.id+" data-fileUrl="+ val.file +">"+val.title+"</option>");
-                $("#file_select").append(tplInput);
-            });
-            form.render()
+            if(json.code == 0){
+                var data = json.data;
+                $("#file_select").empty();
+                $("#file_select").append($("<option>---请选择文件---</option>"));
+                $.each(data, function( key,val ) {
+                    var tplInput=$("<option  value="+val.id+" data-fileUrl="+ val.file +">"+val.title+"</option>");
+                    $("#file_select").append(tplInput);
+                });
+                form.render()
+            }else{
+                console.log(json)
+                layer.msg(json.msg)
+            }
         });
 
         // function genSelect($dom,data,tip){
@@ -200,15 +229,16 @@
         //     form.render()
         // }
 
-        function genCheckBox($dom,data){
-            $dom.empty();
-            $.each(data, function( key,val ) {
-                var tplInput=$("<input type='checkbox' name='energy' lay-skin='primary' lay-filter='energy' value="+val+" title="+val+" checked='' />");
-                $dom.append(tplInput);
-            });
-            form.render()
-        }
+        // function genCheckBox($dom,data){
+        //     $dom.empty();
+        //     $.each(data, function( key,val ) {
+        //         var tplInput=$("<input type='checkbox' name='energy' lay-skin='primary' lay-filter='energy' value="+val+" title="+val+" checked='' />");
+        //         $dom.append(tplInput);
+        //     });
+        //     form.render()
+        // }
 
+        //提交表单
         function submitForm(url,success,error){
             $.ajax({
                 type: "POST",
@@ -220,10 +250,43 @@
             });
         }
 
+        //处理下拉选择完成后
+        function deal_muli_select(elem, data){
+            var NEWJSON = []
+            layui.each(data.data, function (index, item) {
+                NEWJSON.push(item.name)
+            })
+            elem.val(NEWJSON.join(","))
+            var url = '/myapp/api/chart1';
+            submitForm(url,function(json){
+                if(json.code == 0){
+                    data = json.data.data;
+                    geoCoordMap = json.data.geoCoordMap
+                    option.series[0].data=convertData(data);
+                    getViewPort(geoCoordMap,option)
+                    echartsRecords.setOption(option);
+                }else{
+                    console.log(json)
+                    layer.msg(json.msg)
+                }
+            },
+            function(json){
+                console.log(json)
+                layer.msg(json.msg)
+            })
+        }
+
         form.on('select(file_select)', function(da){
             var file_id = $(da.elem).find("option:selected").val();
             var file_url = $(da.elem).find("option:selected").data('fileUrl')
             var select_url = "/myapp/api/muli_select?file_select="+file_id
+            //清空
+            $("#zone_select").val('')
+            $("#country_select").val('')
+            $("#status_select").val('')
+            $("#energy_select").val('')
+            $("#start_date").val('')
+            $("#end_date").val('')
             //区域下拉
             tableSelect.render({
                 elem: '#zone_select',
@@ -237,24 +300,7 @@
                         { field: 'name', title: '名称' }
                     ]]
                 },
-                done: function (elem, data) {
-                    var NEWJSON = []
-                    layui.each(data.data, function (index, item) {
-                        NEWJSON.push(item.name)
-                    })
-                    elem.val(NEWJSON.join(","))
-                    var url = '/myapp/api/chart1';
-                    submitForm(url,function(json){
-                        data = json.data.data;
-                        geoCoordMap = json.data.geoCoordMap
-                        option.series[0].data=convertData(data);
-                        getViewPort(geoCoordMap,option)
-                        echartsRecords.setOption(option);
-                    },
-                    function(json){
-                        console.log(json)
-                    })
-                }
+                done: deal_muli_select
             });
             //国家下拉
             tableSelect.render({
@@ -269,24 +315,7 @@
                         { field: 'name', title: '名称'}
                     ]]
                 },
-                done: function (elem, data) {
-                    var NEWJSON = []
-                    layui.each(data.data, function (index, item) {
-                        NEWJSON.push(item.name)
-                    })
-                    elem.val(NEWJSON.join(","))
-                    var url = '/myapp/api/chart1';
-                    submitForm(url,function(json){
-                        data = json.data.data;
-                        geoCoordMap = json.data.geoCoordMap
-                        option.series[0].data=convertData(data);
-                        getViewPort(geoCoordMap,option)
-                        echartsRecords.setOption(option);
-                    },
-                    function(json){
-                        console.log(json)
-                    })
-                }
+                done: deal_muli_select
             });
             //状态下拉
             tableSelect.render({
@@ -301,49 +330,50 @@
                         { field: 'name', title: '名称' }
                     ]]
                 },
-                done: function (elem, data) {
-                    var NEWJSON = []
-                    layui.each(data.data, function (index, item) {
-                        NEWJSON.push(item.name)
-                    })
-                    elem.val(NEWJSON.join(","))
-                    var url = '/myapp/api/chart1';
-                    submitForm(url,function(json){
-                        data = json.data.data;
-                        geoCoordMap = json.data.geoCoordMap
-                        option.series[0].data=convertData(data);
-                        getViewPort(geoCoordMap,option)
-                        echartsRecords.setOption(option);
-                    },
-                    function(json){
-                        console.log(json)
-                    })
-                }
+                done: deal_muli_select
+            })
+
+            //类别下拉
+            tableSelect.render({
+                elem: '#energy_select',
+                searchKey: 'name',
+                checkedKey: 'name',
+                //searchPlaceholder: 'status',
+                table: {
+                    url: select_url+"&cat_text=Energy",
+                    cols: [[
+                        { type: 'checkbox' },
+                        { field: 'name', title: '名称' }
+                    ]]
+                },
+                done: deal_muli_select
             })
 
             var url = '/myapp/api/chart1'
-            $("#zone_select").empty()
-            $("#country_select").empty()
-            $("#status_select").empty()
-            $("#energy").empty()
             submitForm(url,function(json){
                 //genSelect($("#zone_select"),json.data.zones,'请选择区域')
                 //genSelect($("#country_select"),json.data.countries,'请选择国家')
                 //genSelect($("#status_select"),json.data.status,'请选择状态')
-                genCheckBox($("#energy"),json.data.energys)
-                alldata = json.data;
-                data = json.data.data;
-                geoCoordMap = json.data.geoCoordMap
-                option.title.subtext = file_url
-                option.series[0].data=convertData(data);
-                option.visualMap[0].categories = alldata.energys
-                //option.visualMap[0].inRange.color = gradientColor('#FFD700','#800000',100,alldata.energys.length);
-                option.visualMap[0].inRange.color = gradientColor('#800000','#FFFF00',100,alldata.energys.length);
-                getViewPort(geoCoordMap,option)
-                echartsRecords.setOption(option);
+                if(json.code == 0){
+                    //genCheckBox($("#energy"),json.data.energys)
+                    alldata = json.data;
+                    data = json.data.data;
+                    geoCoordMap = json.data.geoCoordMap
+                    option.title.subtext = file_url
+                    option.series[0].data=convertData(data);
+                    option.visualMap[0].categories = alldata.energys
+                    //option.visualMap[0].inRange.color = gradientColor('#FFD700','#800000',100,alldata.energys.length);
+                    option.visualMap[0].inRange.color = gradientColor('#800000','#FFFF00',100,alldata.energys.length);
+                    getViewPort(geoCoordMap,option)
+                    echartsRecords.setOption(option);
+                }else{
+                    console.log(json)
+                    layer.msg(json.msg);
+                }
             },
             function(json){
                 console.log(json)
+                layer.msg(json.msg);
             })
         });
 
@@ -361,27 +391,27 @@
         //     })
         // })
 
-        form.on('checkbox(energy)',function(da){
-            var url = '/myapp/api/chart1';
-            submitForm(url,function(json){
-                data = json.data.data;
-                geoCoordMap = json.data.geoCoordMap
-                option.series[0].data=convertData(data);
-                getViewPort(geoCoordMap,option)
-                echartsRecords.setOption(option);
-            },
-            function(json){
-                console.log(json)
-            })
-        })
+        // form.on('checkbox(energy)',function(da){
+        //     var url = '/myapp/api/chart1';
+        //     submitForm(url,function(json){
+        //         data = json.data.data;
+        //         geoCoordMap = json.data.geoCoordMap
+        //         option.series[0].data=convertData(data);
+        //         getViewPort(geoCoordMap,option)
+        //         echartsRecords.setOption(option);
+        //     },
+        //     function(json){
+        //         console.log(json)
+        //     })
+        // })
 
-        function istyle(val){
-            item = val.data.value;
-            if(item[4] == 'Coal'){
-                return '#333'
-            }
-            return '#ccc'
-        }
+        // function istyle(val){
+        //     item = val.data.value;
+        //     if(item[4] == 'Coal'){
+        //         return '#333'
+        //     }
+        //     return '#ccc'
+        // }
 
         function colorToRgb(hexColor) {
             let reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/
@@ -404,8 +434,6 @@
                 return sColor
             }
         }
-
-
         /**
         * 生成渐变颜色值数组
         * @param {String} startColor 开始颜色值（十六进制）
@@ -501,9 +529,9 @@
                 }
             },
             bmap: {
-                center: [104.114129, 37.550339],
+                //center: [104.114129, 37.550339],
                 //mapType: 'china',
-                zoom: 1,// 百度地图缩放等级，数字越大，放大越大，地图比例尺越小
+                zoom: 3,// 百度地图缩放等级，数字越大，放大越大，地图比例尺越小
                 roam: 'move', // 是否开启拖拽缩放，可以只设置 'scale' 或者 'move' true
                 mapStyle: {
                     styleJson: [
@@ -609,9 +637,9 @@
                         position: 'right',
                         fontSize :20
                     },
-                    itemStyle: {
-                        color: istyle
-                    },
+                    // itemStyle: {
+                    //     color: istyle
+                    // },
                     emphasis: {
                         label: {
                             show: true
@@ -640,8 +668,9 @@
         var resizeEchartContainer = function () {
             width = $("#echart_card").width();
             height = $("#echart_card").height();
-            document.getElementById('echarts-records').style.width = width+'px';
-            //document.getElementById('echarts-records').style.height = height+'px';
+            document.getElementById('echarts-records').style.width = width;
+            //document.getElementById('echarts-records').style.width = $(".layui-col-md12").clientWidth + 'px';
+            document.getElementById('echarts-records').style.height = height+'px';
         };
         window.onresize = function(){
             resizeEchartContainer(); 
