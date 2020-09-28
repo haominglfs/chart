@@ -258,6 +258,7 @@
             })
             elem.val(NEWJSON.join(","))
             var url = '/myapp/api/chart1';
+            var index = layer.load();
             submitForm(url,function(json){
                 if(json.code == 0){
                     data = json.data.data;
@@ -269,10 +270,12 @@
                     console.log(json)
                     layer.msg(json.msg)
                 }
+                layer.close(index);
             },
             function(json){
                 console.log(json)
                 layer.msg(json.msg)
+                layer.close(index);
             })
         }
 
@@ -348,7 +351,7 @@
                 },
                 done: deal_muli_select
             })
-
+            var index = layer.load();
             var url = '/myapp/api/chart1'
             submitForm(url,function(json){
                 //genSelect($("#zone_select"),json.data.zones,'请选择区域')
@@ -363,13 +366,14 @@
                     option.series[0].data=convertData(data);
                     option.visualMap[0].categories = alldata.energys
                     //option.visualMap[0].inRange.color = gradientColor('#FFD700','#800000',100,alldata.energys.length);
-                    option.visualMap[0].inRange.color = gradientColor('#800000','#FFFF00',100,alldata.energys.length);
+                    //option.visualMap[0].inRange.color = gradientColor('#800000','#FFFF00',100,alldata.energys.length);
                     getViewPort(geoCoordMap,option)
                     echartsRecords.setOption(option);
                 }else{
                     console.log(json)
                     layer.msg(json.msg);
                 }
+                layer.close(index);
             },
             function(json){
                 console.log(json)
@@ -413,67 +417,67 @@
         //     return '#ccc'
         // }
 
-        function colorToRgb(hexColor) {
-            let reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/
-            let sColor = hexColor.toLowerCase()
-            if (sColor && reg.test(sColor)) {
-                if (sColor.length === 4) {
-                let sColorNew = "#"
-                for (let i = 1; i < 4; i += 1) {
-                    sColorNew += sColor.slice(i, i + 1).concat(sColor.slice(i, i + 1))
-                }
-                sColor = sColorNew
-                }
-                //处理六位的颜色值
-                let sColorChange = []
-                for (let i = 1; i < 7; i += 2) {
-                sColorChange.push(parseInt("0x" + sColor.slice(i, i + 2)))
-                }
-                return sColorChange
-            } else {
-                return sColor
-            }
-        }
-        /**
-        * 生成渐变颜色值数组
-        * @param {String} startColor 开始颜色值（十六进制）
-        * @param {String} endColor 结束颜色值（十六进制）
-        * @param {Number} count 生成颜色个数
-        * @param {Number} step 生成步数
-        * @return {Array} 渐变颜色数组
-        */
-        function gradientColor(startColor, endColor, count, step) {
-            let startRGB = colorToRgb(startColor), //转换为rgb数组模式
-                startR = startRGB[0],
-                startG = startRGB[1],
-                startB = startRGB[2]
+        // function colorToRgb(hexColor) {
+        //     let reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/
+        //     let sColor = hexColor.toLowerCase()
+        //     if (sColor && reg.test(sColor)) {
+        //         if (sColor.length === 4) {
+        //         let sColorNew = "#"
+        //         for (let i = 1; i < 4; i += 1) {
+        //             sColorNew += sColor.slice(i, i + 1).concat(sColor.slice(i, i + 1))
+        //         }
+        //         sColor = sColorNew
+        //         }
+        //         //处理六位的颜色值
+        //         let sColorChange = []
+        //         for (let i = 1; i < 7; i += 2) {
+        //         sColorChange.push(parseInt("0x" + sColor.slice(i, i + 2)))
+        //         }
+        //         return sColorChange
+        //     } else {
+        //         return sColor
+        //     }
+        // }
+        // /**
+        // * 生成渐变颜色值数组
+        // * @param {String} startColor 开始颜色值（十六进制）
+        // * @param {String} endColor 结束颜色值（十六进制）
+        // * @param {Number} count 生成颜色个数
+        // * @param {Number} step 生成步数
+        // * @return {Array} 渐变颜色数组
+        // */
+        // function gradientColor(startColor, endColor, count, step) {
+        //     let startRGB = colorToRgb(startColor), //转换为rgb数组模式
+        //         startR = startRGB[0],
+        //         startG = startRGB[1],
+        //         startB = startRGB[2]
 
-            let endRGB = colorToRgb(endColor),
-                endR = endRGB[0],
-                endG = endRGB[1],
-                endB = endRGB[2]
+        //     let endRGB = colorToRgb(endColor),
+        //         endR = endRGB[0],
+        //         endG = endRGB[1],
+        //         endB = endRGB[2]
 
-            let sR = (endR - startR) / step, //总差值
-                sG = (endG - startG) / step,
-                sB = (endB - startB) / step
+        //     let sR = (endR - startR) / step, //总差值
+        //         sG = (endG - startG) / step,
+        //         sB = (endB - startB) / step
 
-            let generateRStr = (r, g, b) => {
-                return 'rgb(' + parseInt(r) + ',' + parseInt(g) + ',' + parseInt(b) + ')'
-            }
+        //     let generateRStr = (r, g, b) => {
+        //         return 'rgb(' + parseInt(r) + ',' + parseInt(g) + ',' + parseInt(b) + ')'
+        //     }
 
-            let colorArr = []
-            for (let i = 0; i < step; i++) {
-                // 计算每一步的rgb值 
-                if (count % 2 !== 0 && i == 0) {
-                colorArr.push(generateRStr(startR, startG, startB))
-                } else if (count % 2 !== 0 && i == step - 1) {
-                colorArr.push(generateRStr(endR, endG, endB))
-                } else {
-                colorArr.push(generateRStr(sR * i + startR, sG * i + startG, sB * i + startB))
-                }
-            }
-            return colorArr
-        }
+        //     let colorArr = []
+        //     for (let i = 0; i < step; i++) {
+        //         // 计算每一步的rgb值 
+        //         if (count % 2 !== 0 && i == 0) {
+        //         colorArr.push(generateRStr(startR, startG, startB))
+        //         } else if (count % 2 !== 0 && i == step - 1) {
+        //         colorArr.push(generateRStr(endR, endG, endB))
+        //         } else {
+        //         colorArr.push(generateRStr(sR * i + startR, sG * i + startG, sB * i + startB))
+        //         }
+        //     }
+        //     return colorArr
+        // }
 
         /**
          * 报表功能
@@ -511,6 +515,13 @@
                     color: '#fff'
                 }
             },
+            // dataZoom : [
+            //     {
+            //         type: 'inside',
+            //         start : 10,
+            //         end : 60
+            //     }
+            // ],
             tooltip : {
                 trigger: 'item',
                 formatter: function(params, ticket, callback){
@@ -531,8 +542,8 @@
             bmap: {
                 //center: [104.114129, 37.550339],
                 //mapType: 'china',
-                zoom: 3,// 百度地图缩放等级，数字越大，放大越大，地图比例尺越小
-                roam: 'move', // 是否开启拖拽缩放，可以只设置 'scale' 或者 'move' true
+                zoom: 1,// 百度地图缩放等级，数字越大，放大越大，地图比例尺越小
+                roam: true, // 是否开启拖拽缩放，可以只设置 'scale' 或者 'move' true
                 mapStyle: {
                     styleJson: [
                         {
@@ -545,7 +556,8 @@
                             "featureType": "highway",
                             "elementType": "geometry",
                             "stylers": {
-                                "color": "#f49935"
+                                //"color": "#f49935"
+                                "visibility": "off"
                             }
                         }, {
                             "featureType": "railway",
@@ -599,9 +611,21 @@
                     categories: [],
                     //orient :'horizontal',
                     inRange: {       // 选中范围外的视觉配置
-                        color: [],
+                        color: {
+                            'Coal':'OliveDrab',
+                            'Oil':'Gray',
+                            'Gas':'Gold',
+                            'Solar':'LightSalmon',
+                            'Wind':'LightYellow',
+                            'Biomass':'LightGreen',
+                            'Nuclear':'GhostWhite',
+                            'Hydro ':'LightSkyBlue',
+                            'Storage':'Violet',
+                            'Renewables':'Tan',
+                            'Thermal':'Black'
+                        },
                         //symbolSize: [300, 1000]
-                        colorLightness: [0.2, 1]
+                        colorLightness: 0.5
                     },
                     outOfRange: {
                         color: 'red'
@@ -622,9 +646,12 @@
             series : [
                 {
                     name: 'Net capacity',
-                    //type: 'scatter',
-                    type: 'effectScatter',
+                    type: 'scatter',
+                    //type: 'effectScatter',
                     coordinateSystem: 'bmap',
+                    progressive: 0,
+                    //large: true,
+                    animation: false,
                     data: convertData(data),
                     encode: {
                         value: 2
@@ -635,7 +662,7 @@
                     label: {
                         formatter: '{b}',
                         position: 'right',
-                        fontSize :20
+                        fontSize :14
                     },
                     // itemStyle: {
                     //     color: istyle

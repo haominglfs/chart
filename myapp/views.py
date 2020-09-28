@@ -34,9 +34,15 @@ def upload(request):
         try:
             upload_file = request.FILES['file']
             fs = FileSystemStorage()
-            name = fs.save(upload_file.name,upload_file)
+            file_name = upload_file.name
+            name = fs.save(file_name,upload_file)
             url = fs.url(name)
-            Files.objects.create(title=upload_file.name,size=upload_file.size,file=url)
+            #如果是xlsx/xls文件,转换成csv
+            if(file_name.endswith(('xls','xlsx'))):
+                excel_path = os.path.join(settings.MEDIA_ROOT,name)
+                sheet = pd.read_excel(excel_path,header = 0)
+                sheet.to_csv(excel_path+'.csv',index=False)
+            Files.objects.create(title=name,size=upload_file.size,file=url)
             return success(data=url)
         except Exception as e:
             return error(message=str(e))
@@ -86,7 +92,11 @@ def muli_select(request):
         name = request.GET.get('name',None)
         file = Files.objects.get(id=file_id)
         excel_path = os.path.join(settings.MEDIA_ROOT,file.title)
-        df = pd.read_excel(excel_path,header = 0)
+        if(file.title.endswith(('xls','xlsx'))):
+            excel_path = os.path.join(settings.MEDIA_ROOT,file.title+'.csv')
+        #df = pd.read_excel(excel_path,header = 0)
+        types = {'Id':str}
+        df = pd.read_csv(excel_path,header = 0,converters = types)
         df.columns = df.columns.str.strip()
         df.dropna(subset=['Latitude', 'Longitude'],inplace=True)
         df['Plant status'] = df['Plant status'].str.split('/').str[0].str.strip()
@@ -113,7 +123,11 @@ def chart1(request):
         energy = request.POST.get('energy_select',None)
         file = Files.objects.get(id=file_id)
         excel_path = os.path.join(settings.MEDIA_ROOT,file.title)
-        sheet = pd.read_excel(excel_path,header = 0)
+        if(file.title.endswith(('xls','xlsx'))):
+            excel_path = os.path.join(settings.MEDIA_ROOT,file.title+'.csv')
+        #sheet = pd.read_excel(excel_path,header = 0)
+        types = {'Id':str}
+        sheet = pd.read_csv(excel_path,header = 0,converters = types)
         sheet.columns = sheet.columns.str.strip()
         #删除经纬度为空的
         sheet.dropna(subset=['Latitude', 'Longitude'],inplace=True)
