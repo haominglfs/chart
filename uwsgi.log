@@ -1,0 +1,72 @@
+*** Starting uWSGI 2.0.18 (64bit) on [Tue Sep 29 13:19:45 2020] ***
+compiled with version: 4.2.1 Compatible Apple LLVM 11.0.3 (clang-1103.0.32.59) on 26 May 2020 12:24:36
+os: Darwin-19.5.0 Darwin Kernel Version 19.5.0: Tue May 26 20:41:44 PDT 2020; root:xnu-6153.121.2~2/RELEASE_X86_64
+nodename: haoming
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /Users/haominglfs/Documents/learn/python/chart/chart
+writing pidfile to uwsgi.pid
+detected binary path: /usr/local/Cellar/uwsgi/2.0.18_4/bin/uwsgi
+chdir() to /Users/haominglfs/Documents/learn/python/chart/chart/djminiTpl
+your processes number limit is 2784
+your memory page size is 4096 bytes
+detected max file descriptor number: 12800
+lock engine: OSX spinlocks
+thunder lock: disabled (you can enable it with --thunder-lock)
+The -s/--socket option is missing and stdin is not a socket.
+*** Starting uWSGI 2.0.18 (64bit) on [Tue Sep 29 13:20:39 2020] ***
+compiled with version: 4.2.1 Compatible Apple LLVM 11.0.3 (clang-1103.0.32.59) on 26 May 2020 12:24:36
+os: Darwin-19.5.0 Darwin Kernel Version 19.5.0: Tue May 26 20:41:44 PDT 2020; root:xnu-6153.121.2~2/RELEASE_X86_64
+nodename: haoming
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /Users/haominglfs/Documents/learn/python/chart/chart
+writing pidfile to uwsgi.pid
+detected binary path: /usr/local/Cellar/uwsgi/2.0.18_4/bin/uwsgi
+chdir() to /Users/haominglfs/Documents/learn/python/chart/chart/djminiTpl
+your processes number limit is 2784
+your memory page size is 4096 bytes
+detected max file descriptor number: 12800
+lock engine: OSX spinlocks
+thunder lock: disabled (you can enable it with --thunder-lock)
+The -s/--socket option is missing and stdin is not a socket.
+*** Starting uWSGI 2.0.18 (64bit) on [Tue Sep 29 13:23:57 2020] ***
+compiled with version: 4.2.1 Compatible Apple LLVM 11.0.3 (clang-1103.0.32.59) on 26 May 2020 12:24:36
+os: Darwin-19.5.0 Darwin Kernel Version 19.5.0: Tue May 26 20:41:44 PDT 2020; root:xnu-6153.121.2~2/RELEASE_X86_64
+nodename: haoming
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /Users/haominglfs/Documents/learn/python/chart/chart
+writing pidfile to uwsgi.pid
+detected binary path: /usr/local/Cellar/uwsgi/2.0.18_4/bin/uwsgi
+chdir() to /Users/haominglfs/Documents/learn/python/chart/chart/djminiTpl
+your processes number limit is 2784
+your memory page size is 4096 bytes
+detected max file descriptor number: 12800
+lock engine: OSX spinlocks
+thunder lock: disabled (you can enable it with --thunder-lock)
+The -s/--socket option is missing and stdin is not a socket.
+*** Starting uWSGI 2.0.18 (64bit) on [Tue Sep 29 13:27:33 2020] ***
+compiled with version: 4.2.1 Compatible Apple LLVM 11.0.3 (clang-1103.0.32.59) on 26 May 2020 12:24:36
+os: Darwin-19.5.0 Darwin Kernel Version 19.5.0: Tue May 26 20:41:44 PDT 2020; root:xnu-6153.121.2~2/RELEASE_X86_64
+nodename: haoming
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /Users/haominglfs/Documents/learn/python/chart/chart
+writing pidfile to uwsgi.pid
+detected binary path: /usr/local/Cellar/uwsgi/2.0.18_4/bin/uwsgi
+chdir() to /Users/haominglfs/Documents/learn/python/chart/chart/djminiTpl
+your processes number limit is 2784
+your memory page size is 4096 bytes
+detected max file descriptor number: 12800
+lock engine: OSX spinlocks
+thunder lock: disabled (you can enable it with --thunder-lock)
+The -s/--socket option is missing and stdin is not a socket.

@@ -9,6 +9,7 @@ import json
 import pandas as pd
 import os
 from django.core.paginator import Paginator
+from .coordTransform_utils import gcj02_to_bd09
 
 # Create your views here.
 
@@ -71,6 +72,8 @@ def delfile(request,id):
         file = Files.objects.get(id=id)
         fs = FileSystemStorage()
         fs.delete(file.title)
+        if(file.title.endswith(('xls','xlsx'))):
+            fs.delete(file.title+'.csv')
         file.delete()
     except Exception as e:
         return error(message=str(e))
@@ -161,7 +164,7 @@ def chart1(request):
             sheet = sheet[sheet['Commissioning Year']<= int(end_date)]
         if(energy and energy != ''):
             sheet = sheet[sheet['Energy'].fillna('0').str.contains('|'.join(energy.split(',')))]
-        print(sheet)
+        #print(sheet)
         data = []
         geo_obj = {}
         for index,row in sheet.iterrows():
@@ -177,6 +180,9 @@ def chart1(request):
                 ]
             data_obj['value'] = sxarr
             ll = []
+            #lon,lat = gcj02_to_bd09(row["Longitude"],row["Latitude"])
+            #ll.append(lon)
+            #ll.append(lat)
             ll.append(row["Longitude"])
             ll.append(row["Latitude"])
             geo_obj[row["Id"]] = ll

@@ -352,6 +352,7 @@
                 done: deal_muli_select
             })
             var index = layer.load();
+            //echartsRecords.showLoading();
             var url = '/myapp/api/chart1'
             submitForm(url,function(json){
                 //genSelect($("#zone_select"),json.data.zones,'请选择区域')
@@ -374,6 +375,7 @@
                     layer.msg(json.msg);
                 }
                 layer.close(index);
+                //echartsRecords.hideLoading();
             },
             function(json){
                 console.log(json)
@@ -612,20 +614,20 @@
                     //orient :'horizontal',
                     inRange: {       // 选中范围外的视觉配置
                         color: {
-                            'Coal':'OliveDrab',
-                            'Oil':'Gray',
-                            'Gas':'Gold',
-                            'Solar':'LightSalmon',
-                            'Wind':'LightYellow',
-                            'Biomass':'LightGreen',
-                            'Nuclear':'GhostWhite',
-                            'Hydro ':'LightSkyBlue',
-                            'Storage':'Violet',
-                            'Renewables':'Tan',
-                            'Thermal':'Black'
+                            'Coal':'#663300',
+                            'Oil':'#666666',
+                            'Gas':'#FFCC00',
+                            'Solar':'#FF99CC',
+                            'Wind':'#FFFFCC',
+                            'Biomass':'#33FFCC',
+                            'Nuclear':'white',
+                            'Hydro':'#66CCFF',
+                            'Storage':'#990033',
+                            'Renewables':'#CC00FF',
+                            'Thermal':'#FF9933'
                         },
-                        //symbolSize: [300, 1000]
-                        colorLightness: 0.5
+                        //symbolSize: [300, 1000],
+                        opacity : 0.8
                     },
                     outOfRange: {
                         color: 'red'
@@ -649,8 +651,10 @@
                     type: 'scatter',
                     //type: 'effectScatter',
                     coordinateSystem: 'bmap',
-                    progressive: 0,
-                    //large: true,
+                    //progressive: 0,
+                    //progressiveThreshold :3000,
+                    large: true,
+                    largeThreshold:10000,
                     animation: false,
                     data: convertData(data),
                     encode: {
@@ -689,6 +693,14 @@
         bmap.addControl(top_left_control)
         bmap.addControl(top_left_navigation)
         var gc = new BMap.Geocoder();
+
+        // bmap.addEventListener("zoomstart", function(e){
+        //     pc = bmap.getCenter();
+        // });
+
+        // bmap.addEventListener("zoomend", function(e){
+        //     bmap.setCenter(pc)
+        // });
         
         // echarts 窗口缩放自适应
         //用于使chart自适应高度和宽度,通过窗体高宽计算容器高宽
